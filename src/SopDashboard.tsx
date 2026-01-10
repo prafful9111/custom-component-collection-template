@@ -322,7 +322,7 @@ export const SopDashboard = () => {
 
             {/* --- Top Navigation / Header (Context) --- */}
             <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         {/* Interactive Staff Info */}
                         <div
@@ -373,7 +373,7 @@ export const SopDashboard = () => {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
                 {/* === LEFT COLUMN: DIAGNOSIS & BREAKDOWN (Starts wide, stays main focus) === */}
                 <div className="lg:col-span-8 space-y-8">
@@ -389,77 +389,140 @@ export const SopDashboard = () => {
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Improved Risk Signal Section */}
-                            <div className={`rounded-lg p-4 border flex flex-col h-full ${reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <AlertTriangleIcon className={`h-5 w-5 ${reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 ? 'text-red-600' : 'text-green-600'}`} />
-                                    <h3 className={`font-bold ${reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 ? 'text-red-900' : 'text-green-900'}`}>
-                                        Risk & Compliance Signals
-                                    </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* 1. Overall Growth (Expanded) */}
+                            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
+                                            <TrendingUpIcon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Overall Growth</h3>
+                                            <p className="text-xs text-slate-400 font-medium mt-0.5">Performance Trajectory</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs uppercase font-extrabold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                        +42% Improvement
+                                    </span>
                                 </div>
-                                {reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 ? (
-                                    <div className="flex-1 space-y-3">
-                                        {reportData.SOP_Overall.Violations_or_Red_Flags.map((risk, idx) => (
-                                            <div key={idx} className="bg-white/60 rounded border border-red-100 overflow-hidden">
-                                                <button
-                                                    onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
-                                                    className="w-full text-left px-3 py-2 flex justify-between items-start gap-2 hover:bg-white transition-colors"
-                                                >
-                                                    <div>
-                                                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide mb-1
-                                                        ${risk.severity === 'High' ? 'bg-red-600 text-white' : risk.severity === 'Medium' ? 'bg-amber-500 text-white' : 'bg-slate-500 text-white'}`}>
-                                                            {risk.severity} severity
-                                                        </span>
-                                                        <p className="text-xs font-semibold text-red-900 leading-tight">{risk.description}</p>
-                                                    </div>
-                                                    {expandedRisk === idx ? <ChevronUpIcon className="w-4 h-4 text-red-400" /> : <ChevronDownIcon className="w-4 h-4 text-red-400" />}
-                                                </button>
-                                                {expandedRisk === idx && (
-                                                    <div className="px-3 py-2 bg-red-50/50 border-t border-red-100">
-                                                        <p className="text-[10px] uppercase font-bold text-red-400 mb-1">Evidence</p>
-                                                        <p className="text-xs text-slate-700 italic font-medium">"{risk.evidence}"</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
+
+                                <div className="space-y-4 flex-1">
+                                    {/* Initial State */}
+                                    <div className="relative pl-4 border-l-2 border-slate-200">
+                                        <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-white"></div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase mb-1">Starting Point</p>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded">
+                                                {reportData.SOP_Overall.Initially_Before_Coaching.level}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-slate-500 line-clamp-2 italic">
+                                            "{reportData.SOP_Overall.Initially_Before_Coaching.note}"
+                                        </p>
                                     </div>
-                                ) : (
-                                    <div className="flex-1 flex items-center justify-center text-center">
-                                        <p className="text-sm text-green-800">No major violations detected.</p>
+
+                                    {/* Final State */}
+                                    <div className="relative pl-4 border-l-2 border-emerald-400">
+                                        <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50"></div>
+                                        <p className="text-xs font-bold text-emerald-600 uppercase mb-1">Current Status</p>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">
+                                                {reportData.SOP_Overall.After_Coaching.level}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-slate-800 font-medium leading-relaxed">
+                                            {reportData.SOP_Overall.After_Coaching.note}
+                                        </p>
                                     </div>
-                                )}
+                                </div>
                             </div>
 
-                            {/* Improvement Metrics */}
-                            <div className="col-span-2 grid grid-cols-2 gap-4">
-                                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 flex flex-col">
-                                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Overall Growth</h3>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded">
-                                            {reportData.SOP_Overall.Initially_Before_Coaching.level}
-                                        </span>
-                                        <span className="text-slate-400">→</span>
-                                        <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">
-                                            {reportData.SOP_Overall.After_Coaching.level}
-                                        </span>
+                            {/* 2. Coachability (Expanded) */}
+                            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                                            <BrainIcon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Coachability</h3>
+                                            <p className="text-xs text-slate-400 font-medium mt-0.5">Receptiveness & Adaptability</p>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500 line-clamp-3">
-                                        {reportData.SOP_Overall.After_Coaching.note}
-                                    </p>
+                                    <span className="text-xs uppercase font-extrabold px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                        Highly Coachable
+                                    </span>
                                 </div>
-                                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 flex flex-col">
-                                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Coachability</h3>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-indigo-600 font-bold text-sm">{reportData.SOP_Overall.Learning_Behavior.status}</span>
+
+                                <div className="flex-1 flex flex-col gap-4">
+                                    <div className="p-4 bg-white rounded-lg border border-slate-100 shadow-sm">
+                                        <p className="text-xs font-bold text-slate-400 uppercase mb-2">Observed Behavior</p>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <CheckCircleIcon className="w-5 h-5 text-indigo-500" />
+                                            <span className="text-indigo-900 font-bold text-lg leading-none">{reportData.SOP_Overall.Learning_Behavior.status}</span>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-500">
-                                        {reportData.SOP_Overall.Learning_Behavior.note}
-                                    </p>
+
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase mb-2">Coach's Observation</p>
+                                        <p className="text-sm text-slate-600 leading-7">
+                                            {reportData.SOP_Overall.Learning_Behavior.note}
+                                            <span className="block mt-2 text-indigo-600 font-medium text-xs bg-indigo-50 p-2 rounded border border-indigo-100">
+                                                <span className="font-bold">✔ Strength:</span> Agent actively asks clarifying questions and paraphrases feedback to ensure understanding.
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </section>
+
+                    {/* NEW: Violations & Red Flags Section */}
+                    {reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 && (
+                        <section className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+                            <div className="p-4 bg-red-50 border-b border-red-100 flex items-center gap-2">
+                                <AlertTriangleIcon className="w-5 h-5 text-red-600" />
+                                <h2 className="text-lg font-bold text-red-900">Violations & Red Flags</h2>
+                            </div>
+                            <div className="p-0">
+                                {reportData.SOP_Overall.Violations_or_Red_Flags.map((risk, idx) => (
+                                    <div key={idx} className={`border-b border-slate-100 last:border-0`}>
+                                        <button
+                                            onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
+                                            className="w-full text-left p-4 flex justify-between items-start gap-4 hover:bg-slate-50 transition-colors group"
+                                        >
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide
+                                                    ${risk.severity === 'High' ? 'bg-red-600 text-white' : risk.severity === 'Medium' ? 'bg-amber-500 text-white' : 'bg-slate-500 text-white'}`}>
+                                                        {risk.severity} SEVERITY
+                                                    </span>
+                                                </div>
+                                                <h3 className="font-semibold text-slate-900 group-hover:text-red-700 transition-colors">{risk.description}</h3>
+                                            </div>
+                                            <div className="mt-1">
+                                                {expandedRisk === idx ?
+                                                    <ChevronUpIcon className="w-5 h-5 text-slate-400 group-hover:text-red-500" /> :
+                                                    <ChevronDownIcon className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
+                                                }
+                                            </div>
+                                        </button>
+
+                                        {/* Expandable Evidence Area */}
+                                        {expandedRisk === idx && (
+                                            <div className="bg-slate-50 p-4 border-t border-slate-100 animate-in slide-in-from-top-2 duration-200">
+                                                <div className="bg-white border-l-4 border-red-400 p-4 rounded-r-md shadow-sm">
+                                                    <h4 className="text-xs font-bold text-red-400 uppercase mb-2">Evidence from Transcript</h4>
+                                                    <p className="text-slate-700 italic leading-relaxed">"{risk.evidence}"</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
 
                     {/* NEW: Coaching Impact & Transformation (SPACING FIX) */}
                     <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
