@@ -1,3 +1,5 @@
+/** es-lint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useState, useEffect } from 'react';
 import './output.css'; // Utilizing the confirmed working CSS file
 
