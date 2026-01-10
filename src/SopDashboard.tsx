@@ -50,164 +50,62 @@ const XIcon = ({ className }: { className?: string }) => (
 );
 
 // --- Default Data (Fallback) ---
-const DEFAULT_STAFF_CONTEXT = {
-    name: "Vikram Sharma",
-    id: "EMP-2024-089",
-    role: "Senior Associate",
-    tenure: "2 Years 3 Months",
-    managerName: "Sarah Jenkins",
-    sopName: "Package Promotion & Value Communication",
-    sopId: "SOP-PKG-V2",
-    sopVersion: "2.1 (Active)",
-    callType: "Roleplay Evaluation",
-    dateTime: "Oct 12, 2023 • 10:30 AM",
-    duration: "14m 20s",
-    overallScore: 82,
-    status: "Conditioned Approval",
-};
-
-const DEFAULT_REPORT_DATA = {
-    "SOP_Overall": {
-        "Violations_or_Red_Flags": [
-            {
-                "severity": "High",
-                "description": "Dismissive initial response to price objection.",
-                "evidence": "“मैं उनको बोलूंगा की सर वो लोकल हॉस्पिटल है तो हम उसका जानते नहीं है प्राइस और फिर मैं बोलूंगा की आपको कराना है तो आप कर लो नहीं तो आप चले जाइए”"
-            }
-        ],
-        "Help_or_Coaching_Intensity": {
-            "level": "Significant"
-        },
-        "Initially_Before_Coaching": {
-            "level": "Didn't Know / Incorrect",
-            "note": "Agent started with an incorrect and non-compliant approach that violated SOP tone and structure."
-        },
-        "After_Coaching": {
-            "level": "Good",
-            "note": "After multiple guided corrections, the agent could recall and sequence all six SOP steps mostly correctly."
-        },
-        "Initial_Communication_And_Clarity": {
-            "note": "Initially unclear, defensive, and dismissive—showed low confidence and lack of SOP understanding."
-        },
-        "Customer_Impact_Initial": {
-            "outcome": "Strongly Negative",
-            "note": "Initial response would alienate the family and potentially lose the case entirely."
-        },
-        "Logical_Order_Initial": {
-            "status": "Out of Order",
-            "note": "No structured flow; agent started with statements contrary to SOP sequence."
-        },
-        "Final_Communication_And_Clarity": {
-            "note": "Improved to structured, confident communication covering acknowledgment, package clarity, value points, billing transparency, and decision support."
-        },
-        "Customer_Impact_Final": {
-            "outcome": "Positive",
-            "note": "Final approach was aligned with SOP and would likely build trust with the family."
-        },
-        "Logical_Order_Final": {
-            "status": "Maintained Order",
-            "note": "Agent could list and explain all steps in the correct sequence after coaching."
-        },
-        "Learning_Behavior": {
-            "status": "Fully Engaged",
-            "note": "Asked questions, repeated explanations, and engaged actively till the end of the session."
-        },
-        "Strengths": [
-            "Showed improvement and retention across steps after guidance",
-            "Demonstrated willingness to learn and correct errors",
-            "Used natural empathetic tone after coaching"
-        ],
-        "Weaknesses": [
-            "Initially dismissive and non-compliant tone",
-            "Forgot final step (documentation) without prompt",
-            "Lacked structured recall until guided step-by-step"
-        ]
-    },
-    "SOP_Steps": [
-        {
-            "Step_Name": "Step 1 — Acknowledge & Normalize the Concern",
-            "Initial_Status": "Didn't Know / Incorrect",
-            "Coaching_Support": "Significant",
-            "Final_Status": "Strong",
-            "Specifics_Mentioned": [
-                "Acknowledging price difference",
-                "Normalizing the query",
-                "Empathetic tone"
-            ],
-            "Evidence": "“सर मैं समझ सकता हूं की यह सवाल जायज है और प्राइस डिफरेंस जानना भी बहुत जरूरी होता है...”",
-            "Note": "Initially agent dismissed the family but after coaching, provided empathetic acknowledgement per SOP.",
-            "AI_Support_Provided": {
-                "summary": "AI guided agent to replace dismissive response with normalized empathetic acknowledgement."
-            }
-        },
-        {
-            "Step_Name": "Step 2 — Clarify Package Structure",
-            "Initial_Status": "Weak",
-            "Coaching_Support": "Significant",
-            "Final_Status": "Good",
-            "Specifics_Mentioned": ["Comparison between hospitals", "Inclusions/Exclusions"],
-            "Evidence": "“पहले स्ट्रक्चर समझाओ क्योंकि हो सकता है उनकी कम पैसे किसी और पैकेज के...”",
-            "Note": "Agent recalled the concept only after prompting but later explained correctly.",
-            "AI_Support_Provided": { "summary": "AI reminded of package structure clarification." }
-        },
-        {
-            "Step_Name": "Step 3 — Explain Where Apollo Invests More",
-            "Initial_Status": "Weak",
-            "Coaching_Support": "Partial",
-            "Final_Status": "Good",
-            "Specifics_Mentioned": ["Safety standards", "Doctor availability", "Expertise"],
-            "Evidence": "“सेफ्टी स्टैंडर्ड्स पे या हमारे डॉक्टर्स की अवेलेबिलिटी पे...”",
-            "Note": "Agent mentioned general value but missed concrete SOP examples until prompted.",
-            "AI_Support_Provided": { "summary": "AI redirected agent to incorporate infection control examples." }
-        },
-        {
-            "Step_Name": "Step 4 — Predictability & Transparency",
-            "Initial_Status": "Average",
-            "Coaching_Support": "Minimal",
-            "Final_Status": "Good",
-            "Specifics_Mentioned": ["Transparent billing", "No surprise bill"],
-            "Evidence": "“अपोलो के अंदर ये प्रैक्टिस फॉलो होती है की हर ब्रिल का ब्रेक डाउन होता है...”",
-            "Note": "Agent conveyed transparency intent clearly after coaching.",
-            "AI_Support_Provided": { "summary": "AI validated and reinforced description of transparent billing." }
-        },
-        {
-            "Step_Name": "Step 5 — Invite Informed Decision",
-            "Initial_Status": "Average",
-            "Coaching_Support": "Minimal",
-            "Final_Status": "Strong",
-            "Specifics_Mentioned": ["Supportive tone", "Counseling offer"],
-            "Evidence": "“मैं उनको बताऊंगा की सर आप अपने अकॉर्डिंग डिसिशन ले सकते हो...”",
-            "Note": "Aligned with SOP guidance of calm, supportive closing.",
-            "AI_Support_Provided": { "summary": "AI guided to maintain non-forceful tone." }
-        },
-        {
-            "Step_Name": "Step 6 — Documentation",
-            "Initial_Status": "Didn't Know / Incorrect",
-            "Coaching_Support": "Significant",
-            "Final_Status": "Average",
-            "Specifics_Mentioned": ["Notes entry", "Sentiment logging"],
-            "Evidence": "“मुझे एक्चुअली याद नहीं आया बताइए ना क्या नोट करना था हमें”",
-            "Note": "Initially unaware about documentation; could recall basic details after explanation.",
-            "AI_Support_Provided": { "summary": "AI explained documentation step purpose and structure." }
-        }
-    ]
-};
-
-const visualTranscript = [
-    { time: "00:15", speaker: "Customer", text: "Why is the package so expensive here compared to the local hospital?" },
-    { time: "00:22", speaker: "Agent", text: "Sir, that is a local hospital. We don't know their prices. If you want to do it there, go ahead." },
-    { time: "00:28", speaker: "Coach (AI)", text: "Pause. Remember Step 1: Acknowledge and Normalize. Don't be dismissive." },
-    { time: "00:35", speaker: "Agent", text: "Right, sorry. Let me try again. 'Sir, I understand your concern. It's valid to check price differences...'" },
-    { time: "00:45", speaker: "Customer", text: "Okay, but what exactly am I paying for?" },
-    { time: "00:50", speaker: "Agent", text: " Apollo invests more in safety and expertise. Our infection control is top tier." },
+// --- User Provided DB Data ---
+const SAMPLE_DB_DATA = [
+    {
+        "idx": 4,
+        "id": "6b3bbd3a-edce-4034-b14a-b8afa4c59f62",
+        "transcription": "\"Sir, if they are quoting less, that is a local hospital, we don’t really know their pricing structure. I will just tell you that we cannot match that amount. If you want to get the surgery done here, then you can proceed, otherwise you may go there. Our hospital has its own rates and policies. I don’t have much to explain about why the difference exists. You can decide on your own where you want to go for the surgery.\"",
+        "analysis": "{\"SOP_Steps\": [{\"Note\": \"Agent failed to acknowledge or normalize the price concern.\", \"Evidence\": \"\\\"I don’t have much to explain about why the difference exists.\\\"\", \"Step_Name\": \"Step 1 — Acknowledge & Normalize the Concern\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not attempt this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No attempt to clarify or compare package structures.\", \"Evidence\": \"\\\"We don’t really know their pricing structure. I will just tell you that we cannot match that amount.\\\"\", \"Step_Name\": \"Step 2 — Clarify Package Structure (Inclusions vs Exclusions)\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent skipped this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of operational strengths or value points.\", \"Evidence\": \"\\\"Our hospital has its own rates and policies.\\\"\", \"Step_Name\": \"Step 3 — Explain Where Apollo Invests More (Value Points)\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not address value points.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of billing predictability or transparency.\", \"Evidence\": \"\\\"I don’t have much to explain about why the difference exists.\\\"\", \"Step_Name\": \"Step 4 — Share Predictability & Transparency Commitment\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent omitted this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"Agent did not invite an informed decision in a supportive or confident manner.\", \"Evidence\": \"\\\"You can decide on your own where you want to go for the surgery.\\\"\", \"Step_Name\": \"Step 5 — Invite Them to Take an Informed Decision\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent's approach was unsupportive.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of documentation or escalation.\", \"Evidence\": \"No evidence in transcript.\", \"Step_Name\": \"Step 6 — Documentation\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not address documentation.\"}, \"Specifics_Mentioned\": []}], \"SOP_Overall\": {\"Strengths\": [], \"Weaknesses\": [\"Dismissive and non-empathetic response\", \"Did not acknowledge or normalize the concern\", \"No attempt to clarify package structure\", \"No explanation of value points\", \"No mention of billing transparency\", \"Did not invite informed decision supportively\", \"No documentation or escalation\"], \"After_Coaching\": {\"note\": \"No coaching or correction occurred; agent remained non-compliant.\", \"level\": \"Didn't Know / Incorrect\"}, \"Learning_Behavior\": {\"note\": \"No evidence of engagement, learning, or willingness to improve.\", \"status\": \"Disinterested\"}, \"Logical_Order_Final\": {\"note\": \"SOP steps were not attempted or referenced.\", \"status\": \"Out of Order\"}, \"Customer_Impact_Final\": {\"note\": \"No trust built, no retention effort, and high risk of patient loss.\", \"outcome\": \"Strongly Negative\"}, \"Logical_Order_Initial\": {\"note\": \"No SOP structure or logical flow was followed.\", \"status\": \"Out of Order\"}, \"Customer_Impact_Initial\": {\"note\": \"Family would feel dismissed, unsupported, and likely to choose the competitor.\", \"outcome\": \"Strongly Negative\"}, \"Violations_or_Red_Flags\": [{\"evidence\": \"If you want to get the surgery done here, then you can proceed, otherwise you may go there.\", \"severity\": \"High\", \"description\": \"Dismissed the family’s concern and suggested they go elsewhere, violating the SOP’s requirement for empathetic, trust-building communication.\"}, {\"evidence\": \"I don’t have much to explain about why the difference exists.\", \"severity\": \"High\", \"description\": \"Failed to acknowledge or normalize the price concern, directly contradicting SOP Step 1.\"}, {\"evidence\": \"We don’t really know their pricing structure. I will just tell you that we cannot match that amount.\", \"severity\": \"Medium\", \"description\": \"Did not clarify package structure or attempt an apples-to-apples comparison.\"}, {\"evidence\": \"Our hospital has its own rates and policies.\", \"severity\": \"Medium\", \"description\": \"Did not explain Apollo’s value points or operational strengths.\"}, {\"evidence\": \"I don’t have much to explain about why the difference exists.\", \"severity\": \"Medium\", \"description\": \"No mention of billing predictability or transparency commitment.\"}, {\"evidence\": \"You can decide on your own where you want to go for the surgery.\", \"severity\": \"Low\", \"description\": \"Did not invite the family to take an informed decision in a supportive manner.\"}, {\"evidence\": \"No evidence in transcript.\", \"severity\": \"Low\", \"description\": \"No documentation or mention of recording the conversation or escalation.\"}], \"Initially_Before_Coaching\": {\"note\": \"Agent did not follow any SOP step and responded in a dismissive, non-compliant manner.\", \"level\": \"Didn't Know / Incorrect\"}, \"Help_or_Coaching_Intensity\": {\"level\": \"None\"}, \"Final_Communication_And_Clarity\": {\"note\": \"No improvement; agent did not attempt to clarify, explain, or reassure.\"}, \"Initial_Communication_And_Clarity\": {\"note\": \"Communication was blunt, dismissive, and lacked clarity or depth; agent showed no confidence in handling the concern.\"}}}",
+        "created_at": "2026-01-06 10:04:58.374+00",
+        "updated_at": "2026-01-06 10:05:00.029774+00"
+    }
 ];
+
+// --- Data Parsing Helper ---
+const processDbData = (data: any[]) => {
+    const record = data[0];
+    const parsedAnalysis = JSON.parse(record.analysis);
+
+    return {
+        staffContext: {
+            name: "Data Not Available",
+            id: record.id || "Data Not Available",
+            role: "Data Not Available",
+            tenure: "Data Not Available",
+            managerName: "Data Not Available",
+            sopName: "Data Not Available",
+            sopId: record.idx ? `ID: ${record.idx}` : "Data Not Available",
+            sopVersion: "Data Not Available",
+            callType: "Data Not Available",
+            dateTime: record.created_at || "Data Not Available",
+            duration: "Data Not Available",
+            overallScore: "N/A", // Not present in provided JSON
+            status: "Data Not Available",
+        },
+        reportData: {
+            SOP_Overall: parsedAnalysis.SOP_Overall,
+            SOP_Steps: parsedAnalysis.SOP_Steps
+        },
+        transcript: record.transcription.replace(/^"|"$/g, ''), // Remove wrapping, quotes
+        metadata: {
+            idx: record.idx,
+            created_at: record.created_at,
+            updated_at: record.updated_at
+        }
+    };
+};
+
+const INITIAL_DATA = processDbData(SAMPLE_DB_DATA);
 
 export const SopDashboard = () => {
     const [activeStep, setActiveStep] = useState<number | null>(null);
     const [expandedRisk, setExpandedRisk] = useState<number | null>(0); // Default first risk open
     const [isPlaying, setIsPlaying] = useState(false);
-    const [staffContext, setStaffContext] = useState(DEFAULT_STAFF_CONTEXT);
-    const [reportData, setReportData] = useState(DEFAULT_REPORT_DATA);
+    const [staffContext, setStaffContext] = useState(INITIAL_DATA.staffContext);
+    const [reportData, setReportData] = useState(INITIAL_DATA.reportData);
+    const [transcript, setTranscript] = useState<string | any[]>(INITIAL_DATA.transcript);
+    const [metadata, setMetadata] = useState(INITIAL_DATA.metadata);
 
     // Modal States
     const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
@@ -221,11 +119,16 @@ export const SopDashboard = () => {
             // Subscribe to model updates
             const unsubscribe = win.Retool.subscribe((model: any) => {
                 if (model) {
-                    if (model.staffContext) {
-                        setStaffContext(prev => ({ ...prev, ...model.staffContext }));
-                    }
-                    if (model.reportData) {
-                        setReportData(prev => ({ ...prev, ...model.reportData }));
+                    if (model.dbData) {
+                        const processed = processDbData(model.dbData);
+                        setStaffContext(processed.staffContext);
+                        setReportData(processed.reportData);
+                        setTranscript(processed.transcript);
+                        setMetadata(processed.metadata);
+                    } else {
+                        // Fallback partial updates
+                        if (model.staffContext) setStaffContext(prev => ({ ...prev, ...model.staffContext }));
+                        if (model.reportData) setReportData(prev => ({ ...prev, ...model.reportData }));
                     }
                 }
             });
@@ -402,7 +305,7 @@ export const SopDashboard = () => {
                                             <p className="text-xs text-slate-400 font-medium mt-0.5">Performance Trajectory</p>
                                         </div>
                                     </div>
-                                    <span className="text-xs uppercase font-extrabold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    <span className="text-xs uppercase font-semibold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
                                         +42% Improvement
                                     </span>
                                 </div>
@@ -450,7 +353,7 @@ export const SopDashboard = () => {
                                             <p className="text-xs text-slate-400 font-medium mt-0.5">Receptiveness & Adaptability</p>
                                         </div>
                                     </div>
-                                    <span className="text-xs uppercase font-extrabold px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                    <span className="text-xs uppercase font-semibold px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
                                         Highly Coachable
                                     </span>
                                 </div>
@@ -535,22 +438,22 @@ export const SopDashboard = () => {
                             {/* 1. Communication */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> {/* Increased gap */}
                                 {/* Initial */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-red-400"></span> Initial Communication
                                     </h3>
-                                    <div className="bg-red-50 border border-red-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-red-50 border border-red-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <p className="text-slate-600 italic text-sm leading-relaxed">
                                             {reportData.SOP_Overall.Initial_Communication_And_Clarity.note}
                                         </p>
                                     </div>
                                 </div>
                                 {/* Final */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Final Communication
                                     </h3>
-                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <p className="text-slate-700 text-sm leading-relaxed">
                                             {reportData.SOP_Overall.Final_Communication_And_Clarity.note}
                                         </p>
@@ -561,11 +464,11 @@ export const SopDashboard = () => {
                             {/* 2. Order */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Initial */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-yellow-400"></span> Initial Order
                                     </h4>
-                                    <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <strong className="block text-slate-900 text-sm mb-2">{reportData.SOP_Overall.Logical_Order_Initial.status}</strong>
                                         <p className="text-slate-600 text-sm opacity-90 leading-relaxed">
                                             {reportData.SOP_Overall.Logical_Order_Initial.note}
@@ -573,11 +476,11 @@ export const SopDashboard = () => {
                                     </div>
                                 </div>
                                 {/* Final */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-blue-500"></span> Final Order
                                     </h4>
-                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <strong className="block text-slate-900 text-sm mb-2">{reportData.SOP_Overall.Logical_Order_Final.status}</strong>
                                         <p className="text-slate-600 text-sm opacity-90 leading-relaxed">
                                             {reportData.SOP_Overall.Logical_Order_Final.note}
@@ -589,11 +492,11 @@ export const SopDashboard = () => {
                             {/* 3. Customer Impact */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Initial */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-orange-400"></span> Customer Impact (Initial)
                                     </h4>
-                                    <div className="bg-orange-50 border border-orange-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-orange-50 border border-orange-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <strong className="block text-orange-800 text-sm mb-2">{reportData.SOP_Overall.Customer_Impact_Initial.outcome}</strong>
                                         <p className="text-orange-900/80 text-sm leading-relaxed">
                                             {reportData.SOP_Overall.Customer_Impact_Initial.note}
@@ -601,11 +504,11 @@ export const SopDashboard = () => {
                                     </div>
                                 </div>
                                 {/* Final */}
-                                <div>
+                                <div className="flex flex-col">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Customer Impact (Final)
                                     </h4>
-                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-5 h-full shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-5 flex-1 shadow-sm hover:shadow-md transition-shadow">
                                         <strong className="block text-emerald-800 text-sm mb-2">{reportData.SOP_Overall.Customer_Impact_Final.outcome}</strong>
                                         <p className="text-emerald-900/80 text-sm leading-relaxed">
                                             {reportData.SOP_Overall.Customer_Impact_Final.note}
@@ -697,10 +600,10 @@ export const SopDashboard = () => {
                 </div>
 
                 {/* === RIGHT COLUMN: EVIDENCE & ACTIONS (Sidebar) === */}
-                <div className="lg:col-span-4 space-y-8">
+                <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 lg:self-start">
 
                     {/* 1. Audio & Transcript (Source of Truth) */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-24">
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <h3 className="font-bold text-slate-800">Call Recording</h3>
                             <span className="text-xs font-mono text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">{staffContext.duration}</span>
@@ -722,22 +625,29 @@ export const SopDashboard = () => {
                         </div>
 
                         {/* Transcript Snippet */}
+                        {/* Transcript Snippet */}
                         <div className="max-h-[500px] overflow-y-auto p-4 space-y-5 bg-slate-50/50">
-                            {visualTranscript.map((line, i) => (
-                                <div key={i} className={`text-sm group ${line.speaker === 'Coach (AI)' ? 'pl-4 border-l-2 border-indigo-200' : ''}`}>
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <span className={`font-bold text-xs uppercase tracking-wide ${line.speaker === 'Agent' ? 'text-indigo-700' :
-                                            line.speaker === 'Customer' ? 'text-slate-600' : 'text-purple-600'
-                                            }`}>
-                                            {line.speaker}
-                                        </span>
-                                        <span className="text-[10px] text-slate-400 group-hover:text-slate-500 transition-colors">{line.time}</span>
+                            {Array.isArray(transcript) ? (
+                                transcript.map((line: any, i: number) => (
+                                    <div key={i} className={`text-sm group ${line.speaker === 'Coach (AI)' ? 'pl-4 border-l-2 border-indigo-200' : ''}`}>
+                                        <div className="flex items-center justify-between mb-1.5">
+                                            <span className={`font-bold text-xs uppercase tracking-wide ${line.speaker === 'Agent' ? 'text-indigo-700' :
+                                                line.speaker === 'Customer' ? 'text-slate-600' : 'text-purple-600'
+                                                }`}>
+                                                {line.speaker}
+                                            </span>
+                                            <span className="text-xs font-mono text-slate-400 group-hover:text-slate-500 transition-colors">{line.time}</span>
+                                        </div>
+                                        <p className={`leading-relaxed text-[13px] ${line.speaker === 'Coach (AI)' ? 'text-purple-800 italic' : 'text-slate-700'}`}>
+                                            {line.text}
+                                        </p>
                                     </div>
-                                    <p className={`leading-relaxed text-[13px] ${line.speaker === 'Coach (AI)' ? 'text-purple-800 italic' : 'text-slate-700'}`}>
-                                        {line.text}
-                                    </p>
+                                ))
+                            ) : (
+                                <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                    {transcript}
                                 </div>
-                            ))}
+                            )}
                             <div className="text-center pt-2 pb-2">
                                 <button className="text-xs text-indigo-600 font-bold hover:underline uppercase tracking-wide">View Full Transcript</button>
                             </div>
@@ -788,6 +698,29 @@ export const SopDashboard = () => {
                         </div>
                     </div>
 
+                </div>
+
+                {/* 3. Metadata / DB Details */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 className="font-bold text-slate-800 mb-4 text-xs uppercase tracking-wider">Record Metadata</h3>
+                    <div className="space-y-3 text-xs">
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                            <span className="text-slate-500 font-medium">DB ID</span>
+                            <span className="text-slate-700 font-mono" title={staffContext.id}>{staffContext.id.substring(0, 18)}...</span>
+                        </div>
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                            <span className="text-slate-500 font-medium">Record Index</span>
+                            <span className="text-slate-700">{metadata.idx}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                            <span className="text-slate-500 font-medium">Created At</span>
+                            <span className="text-slate-700">{new Date(metadata.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-500 font-medium">Last Updated</span>
+                            <span className="text-slate-700">{new Date(metadata.updated_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
