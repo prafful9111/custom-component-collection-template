@@ -54,6 +54,7 @@ const DEFAULT_STAFF_CONTEXT = {
     name: "Vikram Sharma",
     id: "EMP-2024-089",
     role: "Senior Associate",
+    department: "Sales & Support",
     tenure: "2 Years 3 Months",
     managerName: "Sarah Jenkins",
     sopName: "Package Promotion & Value Communication",
@@ -246,78 +247,7 @@ export const SopDashboard = () => {
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 relative">
 
-            {/* --- Modals --- */}
-            {isStaffModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setIsStaffModalOpen(false)}>
-                    <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-xl font-bold text-slate-900">Staff Details</h3>
-                            <button onClick={() => setIsStaffModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                <XIcon className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
-                                <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-                                    <UserIcon className="h-8 w-8" />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-lg text-slate-900">{staffContext.name}</p>
-                                    <p className="text-slate-500 text-sm">{staffContext.role}</p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase font-bold">Employee ID</p>
-                                    <p className="text-sm font-medium text-slate-700">{staffContext.id}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase font-bold">Tenure</p>
-                                    <p className="text-sm font-medium text-slate-700">{staffContext.tenure || "N/A"}</p>
-                                </div>
-                                <div className="col-span-2">
-                                    <p className="text-xs text-slate-400 uppercase font-bold">Reporting Manager</p>
-                                    <p className="text-sm font-medium text-slate-700">{staffContext.managerName || "N/A"}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {isSopModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setIsSopModalOpen(false)}>
-                    <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-xl font-bold text-slate-900">Standard Operating Procedure</h3>
-                            <button onClick={() => setIsSopModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                <XIcon className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-4">
-                                <p className="font-bold text-indigo-900 text-lg">{staffContext.sopName}</p>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase font-bold">SOP ID</p>
-                                    <p className="text-sm font-medium text-slate-700">{staffContext.sopId || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase font-bold">Version</p>
-                                    <p className="text-sm font-medium text-slate-700">{staffContext.sopVersion || "N/A"}</p>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 uppercase font-bold mb-2">Description</p>
-                                <p className="text-sm text-slate-600 leading-relaxed">
-                                    This SOP covers the standard interaction flow for presenting high-value packages, handling price objections, and communicating clinical value to patients' families.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
 
             {/* --- Top Navigation / Header (Context) --- */}
@@ -325,47 +255,115 @@ export const SopDashboard = () => {
                 <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         {/* Interactive Staff Info */}
-                        <div
-                            className="flex items-center gap-4 cursor-pointer hover:bg-slate-50 p-2 -ml-2 rounded-lg transition-colors group"
-                            onClick={() => setIsStaffModalOpen(true)}
-                        >
-                            <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                <UserIcon className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
-                                    {staffContext.name}
-                                    <ChevronDownIcon className="w-4 h-4 text-slate-300 group-hover:text-indigo-400" />
-                                </h1>
-                                <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
-                                    <span className="flex items-center gap-1"><FileTextIcon className="h-3 w-3" /> {staffContext.id}</span>
-                                    <span className="h-1 w-1 rounded-full bg-slate-300"></span>
-                                    <span>{staffContext.role}</span>
+                        <div className="relative">
+                            <div
+                                className="flex items-center gap-4 cursor-pointer hover:bg-slate-50 p-2 -ml-2 rounded-lg transition-colors group"
+                                onClick={() => setIsStaffModalOpen(!isStaffModalOpen)}
+                            >
+                                <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                    <UserIcon className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                                        {staffContext.name}
+                                        <ChevronDownIcon className={`w-4 h-4 text-slate-300 group-hover:text-indigo-400 transition-transform ${isStaffModalOpen ? 'rotate-180' : ''}`} />
+                                    </h1>
+                                    <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
+                                        <span className="flex items-center gap-1"><FileTextIcon className="h-3 w-3" /> {staffContext.id}</span>
+                                        <span className="h-1 w-1 rounded-full bg-slate-300"></span>
+                                        <span>{staffContext.role}</span>
+                                    </div>
                                 </div>
                             </div>
+
+                            {/* Staff Popover */}
+                            {isStaffModalOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setIsStaffModalOpen(false)}></div>
+                                    <div className="absolute top-full left-0 mt-2 z-50 w-80 bg-white rounded-xl shadow-xl border border-slate-100 p-5 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h3 className="text-lg font-bold text-slate-900">Staff Details</h3>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">Employee ID</p>
+                                                    <p className="text-sm font-medium text-slate-700">{staffContext.id}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">Department</p>
+                                                    <p className="text-sm font-medium text-slate-700">{staffContext.department || "Sales"}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">Tenure</p>
+                                                    <p className="text-sm font-medium text-slate-700">{staffContext.tenure || "N/A"}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">Reporting Manager</p>
+                                                    <p className="text-sm font-medium text-slate-700">{staffContext.managerName || "N/A"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="flex flex-col items-end gap-1">
                             <div className="flex items-center gap-4 text-sm text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
-                                {/* Interactive SOP Name */}
-                                <button
-                                    onClick={() => setIsSopModalOpen(true)}
-                                    className="flex items-center gap-1.5 font-medium text-slate-900 hover:text-indigo-600 hover:underline decoration-dashed underline-offset-4 transition-all"
-                                >
-                                    <BrainIcon className="h-4 w-4 text-indigo-500" />
-                                    {staffContext.sopName}
-                                </button>
+                                {/* Interactive SOP Name & Popover */}
+                                <div className="relative flex items-center gap-1.5">
+                                    <button
+                                        onClick={() => setIsSopModalOpen(!isSopModalOpen)}
+                                        className="flex items-center gap-1.5 font-medium text-slate-900 hover:text-indigo-600 hover:underline decoration-dashed underline-offset-4 transition-all"
+                                    >
+                                        <BrainIcon className="h-4 w-4 text-indigo-500" />
+                                        {staffContext.sopName}
+                                    </button>
+
+                                    {/* SOP Popover */}
+                                    {isSopModalOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setIsSopModalOpen(false)}></div>
+                                            <div className="absolute top-full right-0 mt-4 z-50 w-96 bg-white rounded-xl shadow-xl border border-slate-100 p-5 animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="mb-4">
+                                                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Standard Operating Procedure</p>
+                                                    <p className="font-bold text-indigo-900 text-lg leading-tight">{staffContext.sopName}</p>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <p className="text-xs text-slate-400 uppercase font-bold">SOP ID</p>
+                                                            <p className="text-sm font-medium text-slate-700">{staffContext.sopId || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-slate-400 uppercase font-bold">Version</p>
+                                                            <p className="text-sm font-medium text-slate-700">{staffContext.sopVersion || "N/A"}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="pt-3 border-t border-slate-100">
+                                                        <p className="text-xs text-slate-400 uppercase font-bold mb-2">Description</p>
+                                                        <p className="text-sm text-slate-600 leading-relaxed">
+                                                            This SOP covers the standard interaction flow for presenting high-value packages, handling price objections, and communicating clinical value to patients' families.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                                 <span className="h-4 w-px bg-slate-300"></span>
                                 <span className="flex items-center gap-1.5" title="Date of Call">
                                     <CalendarIcon className="h-3.5 w-3.5 text-slate-400" /> {staffContext.dateTime}
                                 </span>
                                 <span className="h-4 w-px bg-slate-300"></span>
-                                <span className="flex items-center gap-1.5" title="Duration">
-                                    <ClockIcon className="h-3.5 w-3.5 text-slate-400" /> {staffContext.duration}
+                                <span className="flex items-center gap-1.5 font-medium text-slate-700" title="Duration">
+                                    <ClockIcon className="h-3.5 w-3.5 text-slate-400" />
+                                    <span>Call Duration: {staffContext.duration}</span>
                                 </span>
                                 <span className="h-4 w-px bg-slate-300"></span>
                                 <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                                    {staffContext.callType}
+                                    Type: {staffContext.callType}
                                 </span>
                             </div>
                         </div>
