@@ -52,72 +52,221 @@ const XIcon = ({ className }: { className?: string }) => (
 
 // --- Default Data (Fallback) ---
 // --- User Provided DB Data ---
-const SAMPLE_DB_DATA = [
-    {
-        "idx": 4,
-        "id": "6b3bbd3a-edce-4034-b14a-b8afa4c59f62",
-        "transcription": "\"Sir, if they are quoting less, that is a local hospital, we don’t really know their pricing structure. I will just tell you that we cannot match that amount. If you want to get the surgery done here, then you can proceed, otherwise you may go there. Our hospital has its own rates and policies. I don’t have much to explain about why the difference exists. You can decide on your own where you want to go for the surgery.\"",
-        "analysis": "{\"SOP_Steps\": [{\"Note\": \"Agent failed to acknowledge or normalize the price concern.\", \"Evidence\": \"\\\"I don’t have much to explain about why the difference exists.\\\"\", \"Step_Name\": \"Step 1 — Acknowledge & Normalize the Concern\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not attempt this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No attempt to clarify or compare package structures.\", \"Evidence\": \"\\\"We don’t really know their pricing structure. I will just tell you that we cannot match that amount.\\\"\", \"Step_Name\": \"Step 2 — Clarify Package Structure (Inclusions vs Exclusions)\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent skipped this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of operational strengths or value points.\", \"Evidence\": \"\\\"Our hospital has its own rates and policies.\\\"\", \"Step_Name\": \"Step 3 — Explain Where Apollo Invests More (Value Points)\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not address value points.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of billing predictability or transparency.\", \"Evidence\": \"\\\"I don’t have much to explain about why the difference exists.\\\"\", \"Step_Name\": \"Step 4 — Share Predictability & Transparency Commitment\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent omitted this step.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"Agent did not invite an informed decision in a supportive or confident manner.\", \"Evidence\": \"\\\"You can decide on your own where you want to go for the surgery.\\\"\", \"Step_Name\": \"Step 5 — Invite Them to Take an Informed Decision\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent's approach was unsupportive.\"}, \"Specifics_Mentioned\": []}, {\"Note\": \"No mention of documentation or escalation.\", \"Evidence\": \"No evidence in transcript.\", \"Step_Name\": \"Step 6 — Documentation\", \"Final_Status\": \"Didn't Know / Incorrect\", \"Initial_Status\": \"Didn't Know / Incorrect\", \"Coaching_Support\": \"None\", \"AI_Support_Provided\": {\"summary\": \"No support provided; agent did not address documentation.\"}, \"Specifics_Mentioned\": []}], \"SOP_Overall\": {\"Strengths\": [], \"Weaknesses\": [\"Dismissive and non-empathetic response\", \"Did not acknowledge or normalize the concern\", \"No attempt to clarify package structure\", \"No explanation of value points\", \"No mention of billing transparency\", \"Did not invite informed decision supportively\", \"No documentation or escalation\"], \"After_Coaching\": {\"note\": \"No coaching or correction occurred; agent remained non-compliant.\", \"level\": \"Didn't Know / Incorrect\"}, \"Learning_Behavior\": {\"note\": \"No evidence of engagement, learning, or willingness to improve.\", \"status\": \"Disinterested\"}, \"Logical_Order_Final\": {\"note\": \"SOP steps were not attempted or referenced.\", \"status\": \"Out of Order\"}, \"Customer_Impact_Final\": {\"note\": \"No trust built, no retention effort, and high risk of patient loss.\", \"outcome\": \"Strongly Negative\"}, \"Logical_Order_Initial\": {\"note\": \"No SOP structure or logical flow was followed.\", \"status\": \"Out of Order\"}, \"Customer_Impact_Initial\": {\"note\": \"Family would feel dismissed, unsupported, and likely to choose the competitor.\", \"outcome\": \"Strongly Negative\"}, \"Violations_or_Red_Flags\": [{\"evidence\": \"If you want to get the surgery done here, then you can proceed, otherwise you may go there.\", \"severity\": \"High\", \"description\": \"Dismissed the family’s concern and suggested they go elsewhere, violating the SOP’s requirement for empathetic, trust-building communication.\"}, {\"evidence\": \"I don’t have much to explain about why the difference exists.\", \"severity\": \"High\", \"description\": \"Failed to acknowledge or normalize the price concern, directly contradicting SOP Step 1.\"}, {\"evidence\": \"We don’t really know their pricing structure. I will just tell you that we cannot match that amount.\", \"severity\": \"Medium\", \"description\": \"Did not clarify package structure or attempt an apples-to-apples comparison.\"}, {\"evidence\": \"Our hospital has its own rates and policies.\", \"severity\": \"Medium\", \"description\": \"Did not explain Apollo’s value points or operational strengths.\"}, {\"evidence\": \"I don’t have much to explain about why the difference exists.\", \"severity\": \"Medium\", \"description\": \"No mention of billing predictability or transparency commitment.\"}, {\"evidence\": \"You can decide on your own where you want to go for the surgery.\", \"severity\": \"Low\", \"description\": \"Did not invite the family to take an informed decision in a supportive manner.\"}, {\"evidence\": \"No evidence in transcript.\", \"severity\": \"Low\", \"description\": \"No documentation or mention of recording the conversation or escalation.\"}], \"Initially_Before_Coaching\": {\"note\": \"Agent did not follow any SOP step and responded in a dismissive, non-compliant manner.\", \"level\": \"Didn't Know / Incorrect\"}, \"Help_or_Coaching_Intensity\": {\"level\": \"None\"}, \"Final_Communication_And_Clarity\": {\"note\": \"No improvement; agent did not attempt to clarify, explain, or reassure.\"}, \"Initial_Communication_And_Clarity\": {\"note\": \"Communication was blunt, dismissive, and lacked clarity or depth; agent showed no confidence in handling the concern.\"}}}",
-        "created_at": "2026-01-06 10:04:58.374+00",
-        "updated_at": "2026-01-06 10:05:00.029774+00"
-    }
-];
+// No hardcoded data used
+
 
 // --- Data Parsing Helper ---
 const processDbData = (data: any[]) => {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        throw new Error('Invalid data: expected non-empty array');
+    }
+
     const record = data[0];
-    const parsedAnalysis = JSON.parse(record.analysis);
+
+    // Safely parse analysis - handle string, object, or missing
+    let parsedAnalysis: any = {};
+    try {
+        if (typeof record?.analysis === 'string') {
+            parsedAnalysis = JSON.parse(record.analysis);
+        } else if (record?.analysis && typeof record.analysis === 'object') {
+            parsedAnalysis = record.analysis;
+        }
+    } catch (e) {
+        console.warn('Failed to parse analysis:', e);
+        parsedAnalysis = {};
+    }
+
+    // Safe accessor for nested properties with fallback
+    const safeGet = (obj: any, path: string, fallback: any = 'N/A') => {
+        try {
+            return path.split('.').reduce((acc, part) => acc?.[part], obj) ?? fallback;
+        } catch {
+            return fallback;
+        }
+    };
+
+    // Safely process transcript
+    let processedTranscript = 'No transcript available';
+    try {
+        if (typeof record?.transcription === 'string') {
+            processedTranscript = record.transcription.replace(/^"|"$/g, '');
+        } else if (Array.isArray(record?.transcription)) {
+            processedTranscript = record.transcription;
+        }
+    } catch (e) {
+        console.warn('Failed to process transcript:', e);
+    }
 
     return {
         staffContext: {
-            name: "Data Not Available",
-            id: record.id || "Data Not Available",
-            role: "Data Not Available",
-            tenure: "Data Not Available",
-            managerName: "Data Not Available",
-            sopName: "Data Not Available",
-            sopId: record.idx ? `ID: ${record.idx}` : "Data Not Available",
-            sopVersion: "Data Not Available",
-            callType: "Data Not Available",
-            dateTime: record.created_at || "Data Not Available",
-            duration: "Data Not Available",
-            overallScore: "N/A", // Not present in provided JSON
-            status: "Data Not Available",
+            name: record?.name || "Data Not Available",
+            id: record?.id || "Data Not Available",
+            role: record?.role || "Data Not Available",
+            department: record?.department || "Data Not Available",
+            tenure: record?.tenure || "Data Not Available",
+            managerName: record?.managerName || "Data Not Available",
+            sopName: record?.sopName || "Data Not Available",
+            sopId: record?.idx ? `ID: ${record.idx}` : "Data Not Available",
+            sopVersion: record?.sopVersion || "Data Not Available",
+            callType: record?.callType || "Data Not Available",
+            dateTime: record?.created_at || "Data Not Available",
+            duration: record?.duration || "Data Not Available",
+            overallScore: record?.overallScore || "N/A",
+            status: record?.status || "Data Not Available",
         },
         reportData: {
-            SOP_Overall: parsedAnalysis.SOP_Overall,
-            SOP_Steps: parsedAnalysis.SOP_Steps
+            SOP_Overall: {
+                Initially_Before_Coaching: safeGet(parsedAnalysis, 'SOP_Overall.Initially_Before_Coaching', { level: 'N/A', note: 'Data not available' }),
+                After_Coaching: safeGet(parsedAnalysis, 'SOP_Overall.After_Coaching', { level: 'N/A', note: 'Data not available' }),
+                Learning_Behavior: safeGet(parsedAnalysis, 'SOP_Overall.Learning_Behavior', { status: 'N/A', note: 'Data not available' }),
+                Initial_Communication_And_Clarity: safeGet(parsedAnalysis, 'SOP_Overall.Initial_Communication_And_Clarity', { note: 'Data not available' }),
+                Final_Communication_And_Clarity: safeGet(parsedAnalysis, 'SOP_Overall.Final_Communication_And_Clarity', { note: 'Data not available' }),
+                Logical_Order_Initial: safeGet(parsedAnalysis, 'SOP_Overall.Logical_Order_Initial', { status: 'N/A', note: 'Data not available' }),
+                Logical_Order_Final: safeGet(parsedAnalysis, 'SOP_Overall.Logical_Order_Final', { status: 'N/A', note: 'Data not available' }),
+                Customer_Impact_Initial: safeGet(parsedAnalysis, 'SOP_Overall.Customer_Impact_Initial', { outcome: 'N/A', note: 'Data not available' }),
+                Customer_Impact_Final: safeGet(parsedAnalysis, 'SOP_Overall.Customer_Impact_Final', { outcome: 'N/A', note: 'Data not available' }),
+                Violations_or_Red_Flags: Array.isArray(parsedAnalysis?.SOP_Overall?.Violations_or_Red_Flags)
+                    ? parsedAnalysis.SOP_Overall.Violations_or_Red_Flags
+                    : [],
+                Strengths: Array.isArray(parsedAnalysis?.SOP_Overall?.Strengths)
+                    ? parsedAnalysis.SOP_Overall.Strengths
+                    : [],
+                Weaknesses: Array.isArray(parsedAnalysis?.SOP_Overall?.Weaknesses)
+                    ? parsedAnalysis.SOP_Overall.Weaknesses
+                    : [],
+            },
+            SOP_Steps: Array.isArray(parsedAnalysis?.SOP_Steps)
+                ? parsedAnalysis.SOP_Steps.map((step: any) => ({
+                    ...step,
+                    Step_Name: step?.Step_Name || 'Unknown Step',
+                    Initial_Status: step?.Initial_Status || 'N/A',
+                    Final_Status: step?.Final_Status || 'N/A',
+                    Evidence: step?.Evidence || 'No evidence available',
+                    AI_Support_Provided: step?.AI_Support_Provided || { summary: 'No support information' },
+                    Specifics_Mentioned: Array.isArray(step?.Specifics_Mentioned) ? step.Specifics_Mentioned : [],
+                }))
+                : []
         },
-        transcript: record.transcription.replace(/^"|"$/g, ''), // Remove wrapping, quotes
+        transcript: processedTranscript,
         metadata: {
-            idx: record.idx,
-            created_at: record.created_at,
-            updated_at: record.updated_at
+            idx: record?.idx ?? 'N/A',
+            created_at: record?.created_at || new Date().toISOString(),
+            updated_at: record?.updated_at || new Date().toISOString()
         }
     };
 };
 
-const INITIAL_DATA = processDbData(SAMPLE_DB_DATA);
+const EMPTY_DATA = {
+    staffContext: {
+        name: "Data Not Available",
+        id: "Data Not Available",
+        role: "Data Not Available",
+        department: "Data Not Available",
+        tenure: "Data Not Available",
+        managerName: "Data Not Available",
+        sopName: "Data Not Available",
+        sopId: "Data Not Available",
+        sopVersion: "Data Not Available",
+        callType: "Data Not Available",
+        dateTime: "Data Not Available",
+        duration: "Data Not Available",
+        overallScore: "N/A",
+        status: "Data Not Available",
+    },
+    reportData: {
+        SOP_Overall: {
+            Initially_Before_Coaching: { level: 'N/A', note: 'Data not available' },
+            After_Coaching: { level: 'N/A', note: 'Data not available' },
+            Learning_Behavior: { status: 'N/A', note: 'Data not available' },
+            Initial_Communication_And_Clarity: { note: 'Data not available' },
+            Final_Communication_And_Clarity: { note: 'Data not available' },
+            Logical_Order_Initial: { status: 'N/A', note: 'Data not available' },
+            Logical_Order_Final: { status: 'N/A', note: 'Data not available' },
+            Customer_Impact_Initial: { outcome: 'N/A', note: 'Data not available' },
+            Customer_Impact_Final: { outcome: 'N/A', note: 'Data not available' },
+            Violations_or_Red_Flags: [],
+            Strengths: [],
+            Weaknesses: [],
+        },
+        SOP_Steps: []
+    },
+    transcript: "No transcript available",
+    metadata: {
+        idx: 'N/A',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    }
+};
+
+// Production API URL
+const API_BASE_URL = 'https://sop-demo-backend.onrender.com';
 
 export const SopDashboard = () => {
     const [activeStep, setActiveStep] = useState<number | null>(null);
     const [expandedRisk, setExpandedRisk] = useState<number | null>(0); // Default first risk open
     const [isPlaying, setIsPlaying] = useState(false);
-    const [staffContext, setStaffContext] = useState(INITIAL_DATA.staffContext);
-    const [reportData, setReportData] = useState(INITIAL_DATA.reportData);
-    const [transcript, setTranscript] = useState<string | any[]>(INITIAL_DATA.transcript);
-    const [metadata, setMetadata] = useState(INITIAL_DATA.metadata);
+    const [staffContext, setStaffContext] = useState(EMPTY_DATA.staffContext);
+    const [reportData, setReportData] = useState(EMPTY_DATA.reportData);
+    const [transcript, setTranscript] = useState<string | any[]>(EMPTY_DATA.transcript);
+    const [metadata, setMetadata] = useState(EMPTY_DATA.metadata);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Modal States
     const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
     const [isSopModalOpen, setIsSopModalOpen] = useState(false);
 
-    // Retool Integration Hook
+    // Fetch data from production API
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                // Get ID from URL params
+                const urlParams = new URLSearchParams(window.location.search);
+                // const sopId = urlParams.get('id');
+                const sopId = '0523c4ff-6553-4194-9744-2766b7fc5dcd';
+
+                if (!sopId) {
+                    throw new Error('No Record ID provided in URL');
+                }
+
+                console.log(`🔄 Fetching SOP data from production API for ID: ${sopId}`);
+
+                const response = await fetch(`${API_BASE_URL}/api/sop/${sopId}`);
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}: ${response.statusText}`);
+                }
+
+                const { data } = await response.json();
+
+                if (!data) {
+                    throw new Error('No data returned from API');
+                }
+
+                // Process the fetched data with fallbacks for "Data Not Available" fields
+                const processed = processDbData([data]);
+                setStaffContext(processed.staffContext);
+                setReportData(processed.reportData);
+                setTranscript(processed.transcript);
+                setMetadata(processed.metadata);
+
+                console.log('✅ Successfully loaded data from production API');
+            } catch (err) {
+                console.error('❌ Error fetching from API:', err);
+                setError(err instanceof Error ? err.message : 'Failed to fetch data');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         // Check if running inside Retool
         const win = window as unknown as Window;
         if (win.Retool) {
-            // Subscribe to model updates
+            // Subscribe to model updates (Retool mode)
+            setIsLoading(false);
             const unsubscribe = win.Retool.subscribe((model: any) => {
                 if (model) {
                     if (model.dbData) {
@@ -134,6 +283,9 @@ export const SopDashboard = () => {
                 }
             });
             return () => unsubscribe();
+        } else {
+            // Standalone mode - fetch from production API
+            fetchData();
         }
     }, []);
 
@@ -150,8 +302,34 @@ export const SopDashboard = () => {
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 relative">
 
+            {/* Loading State */}
+            {isLoading && (
+                <div className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-xl p-8 shadow-2xl max-w-md w-full mx-4">
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                            <p className="text-slate-700 font-medium">Loading SOP Data from API...</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-
+            {/* Error Toast */}
+            {error && !isLoading && (
+                <div className="fixed top-4 right-4 z-50 bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg max-w-md animate-in slide-in-from-top-2">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                            <h3 className="font-bold text-red-900 text-sm">Failed to load data</h3>
+                            <p className="text-red-700 text-xs mt-1">{error}</p>
+                            <p className="text-red-600 text-xs mt-2">Please check the Record ID and try again.</p>
+                        </div>
+                        <button onClick={() => setError(null)} className="text-red-400 hover:text-red-600">
+                            <XIcon className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* --- Top Navigation / Header (Context) --- */}
             <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
@@ -303,9 +481,7 @@ export const SopDashboard = () => {
                                             <p className="text-xs text-slate-400 font-medium mt-0.5">Performance Trajectory</p>
                                         </div>
                                     </div>
-                                    <span className="text-xs uppercase font-semibold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
-                                        +42% Improvement
-                                    </span>
+                                    {/* Badge removed - no dynamic improvement metric available */}
                                 </div>
 
                                 <div className="space-y-4 flex-1">
@@ -352,7 +528,7 @@ export const SopDashboard = () => {
                                         </div>
                                     </div>
                                     <span className="text-xs uppercase font-semibold px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
-                                        Highly Coachable
+                                        {reportData.SOP_Overall.Learning_Behavior.status || 'N/A'}
                                     </span>
                                 </div>
 
@@ -369,9 +545,7 @@ export const SopDashboard = () => {
                                         <p className="text-xs font-bold text-slate-400 uppercase mb-2">Coach's Observation</p>
                                         <p className="text-sm text-slate-600 leading-7">
                                             {reportData.SOP_Overall.Learning_Behavior.note}
-                                            <span className="block mt-2 text-indigo-600 font-medium text-xs bg-indigo-50 p-2 rounded border border-indigo-100">
-                                                <span className="font-bold">✔ Strength:</span> Agent actively asks clarifying questions and paraphrases feedback to ensure understanding.
-                                            </span>
+
                                         </p>
                                     </div>
                                 </div>
@@ -380,7 +554,7 @@ export const SopDashboard = () => {
                     </section>
 
                     {/* NEW: Violations & Red Flags Section */}
-                    {reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 && (
+                    {reportData.SOP_Overall.Violations_or_Red_Flags && Array.isArray(reportData.SOP_Overall.Violations_or_Red_Flags) && reportData.SOP_Overall.Violations_or_Red_Flags.length > 0 && (
                         <section className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
                             <div className="p-4 bg-red-50 border-b border-red-100 flex items-center gap-2">
                                 <AlertTriangleIcon className="w-5 h-5 text-red-600" />
@@ -529,7 +703,7 @@ export const SopDashboard = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {reportData.SOP_Steps.map((step: any, idx: number) => (
+                            {reportData.SOP_Steps && Array.isArray(reportData.SOP_Steps) && reportData.SOP_Steps.length > 0 ? reportData.SOP_Steps.map((step: any, idx: number) => (
                                 <div key={idx} className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                                     {/* Step Header */}
                                     <button
@@ -576,13 +750,13 @@ export const SopDashboard = () => {
                                                     <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 text-indigo-900 text-sm shadow-sm">
                                                         <div className="flex items-start gap-3">
                                                             <BrainIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-indigo-600" />
-                                                            <span className="leading-relaxed">{step.AI_Support_Provided.summary}</span>
+                                                            <span className="leading-relaxed">{step.AI_Support_Provided?.summary || 'No support information'}</span>
                                                         </div>
                                                     </div>
                                                     <div className="mt-4">
                                                         <h4 className="text-xs font-bold text-slate-400 uppercase mb-3">Key Specifics</h4>
                                                         <div className="flex flex-wrap gap-2">
-                                                            {step.Specifics_Mentioned.map((s: any, i: number) => (
+                                                            {step.Specifics_Mentioned && Array.isArray(step.Specifics_Mentioned) && step.Specifics_Mentioned.map((s: any, i: number) => (
                                                                 <span key={i} className="text-xs bg-white px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 shadow-sm font-medium">{s}</span>
                                                             ))}
                                                         </div>
@@ -592,7 +766,11 @@ export const SopDashboard = () => {
                                         </div>
                                     )}
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="bg-white border border-slate-200 rounded-lg p-8 text-center">
+                                    <p className="text-slate-400 italic">No SOP step data available for this record</p>
+                                </div>
+                            )}
                         </div>
                     </section>
                 </div>
@@ -662,12 +840,14 @@ export const SopDashboard = () => {
                                     <CheckCircleIcon className="w-4 h-4" /> Top Strengths
                                 </h4>
                                 <ul className="text-sm text-slate-600 space-y-2 pl-2">
-                                    {reportData.SOP_Overall.Strengths.map((s: any, i: number) => (
+                                    {reportData.SOP_Overall.Strengths && Array.isArray(reportData.SOP_Overall.Strengths) && reportData.SOP_Overall.Strengths.length > 0 ? reportData.SOP_Overall.Strengths.map((s: any, i: number) => (
                                         <li key={i} className="flex gap-2 items-start">
                                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
                                             <span className="leading-snug">{s}</span>
                                         </li>
-                                    ))}
+                                    )) : (
+                                        <li className="text-slate-400 italic">No strengths data available</li>
+                                    )}
                                 </ul>
                             </div>
 
@@ -676,12 +856,14 @@ export const SopDashboard = () => {
                                     <AlertTriangleIcon className="w-4 h-4" /> Areas for Improvement
                                 </h4>
                                 <ul className="text-sm text-slate-600 space-y-2 pl-2">
-                                    {reportData.SOP_Overall.Weaknesses.map((s: any, i: number) => (
+                                    {reportData.SOP_Overall.Weaknesses && Array.isArray(reportData.SOP_Overall.Weaknesses) && reportData.SOP_Overall.Weaknesses.length > 0 ? reportData.SOP_Overall.Weaknesses.map((s: any, i: number) => (
                                         <li key={i} className="flex gap-2 items-start">
                                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0"></span>
                                             <span className="leading-snug">{s}</span>
                                         </li>
-                                    ))}
+                                    )) : (
+                                        <li className="text-slate-400 italic">No weaknesses data available</li>
+                                    )}
                                 </ul>
                             </div>
 
