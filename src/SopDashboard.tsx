@@ -1,5 +1,4 @@
-/** es-lint-disable @typescript-eslint/no-explicit-any */
-
+/** eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import './output.css'; // Utilizing the confirmed working CSS file
 
@@ -391,7 +390,7 @@ export const SopDashboard = () => {
                                 <h2 className="text-lg font-bold text-red-900">Violations & Red Flags</h2>
                             </div>
                             <div className="p-0">
-                                {reportData.SOP_Overall.Violations_or_Red_Flags.map((risk, idx) => (
+                                {reportData.SOP_Overall.Violations_or_Red_Flags.map((risk: any, idx: number) => (
                                     <div key={idx} className={`border-b border-slate-100 last:border-0`}>
                                         <button
                                             onClick={() => setExpandedRisk(expandedRisk === idx ? null : idx)}
@@ -533,7 +532,7 @@ export const SopDashboard = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {reportData.SOP_Steps.map((step, idx) => (
+                            {reportData.SOP_Steps.map((step: any, idx: number) => (
                                 <div key={idx} className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
                                     {/* Step Header */}
                                     <button
@@ -586,7 +585,7 @@ export const SopDashboard = () => {
                                                     <div className="mt-4">
                                                         <h4 className="text-xs font-bold text-slate-400 uppercase mb-3">Key Specifics</h4>
                                                         <div className="flex flex-wrap gap-2">
-                                                            {step.Specifics_Mentioned.map((s, i) => (
+                                                            {step.Specifics_Mentioned.map((s: any, i: number) => (
                                                                 <span key={i} className="text-xs bg-white px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 shadow-sm font-medium">{s}</span>
                                                             ))}
                                                         </div>
@@ -666,7 +665,7 @@ export const SopDashboard = () => {
                                     <CheckCircleIcon className="w-4 h-4" /> Top Strengths
                                 </h4>
                                 <ul className="text-sm text-slate-600 space-y-2 pl-2">
-                                    {reportData.SOP_Overall.Strengths.map((s, i) => (
+                                    {reportData.SOP_Overall.Strengths.map((s: any, i: number) => (
                                         <li key={i} className="flex gap-2 items-start">
                                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
                                             <span className="leading-snug">{s}</span>
@@ -680,7 +679,7 @@ export const SopDashboard = () => {
                                     <AlertTriangleIcon className="w-4 h-4" /> Areas for Improvement
                                 </h4>
                                 <ul className="text-sm text-slate-600 space-y-2 pl-2">
-                                    {reportData.SOP_Overall.Weaknesses.map((s, i) => (
+                                    {reportData.SOP_Overall.Weaknesses.map((s: any, i: number) => (
                                         <li key={i} className="flex gap-2 items-start">
                                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0"></span>
                                             <span className="leading-snug">{s}</span>
