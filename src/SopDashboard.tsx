@@ -114,7 +114,7 @@ const processDbData = (data: any[]) => {
             sopName: "Inbound Lead Conversion SOP",
             sopId: record?.idx ? `ID: ${record.idx}` : "Data Not Available",
             sopVersion: "v4.2",
-            callType: "Inbound Sales",
+            callType: "Coaching Call",
             dateTime: record?.created_at ? new Date(record.created_at).toLocaleString('en-US', {
                 dateStyle: 'medium',
                 timeStyle: 'short'

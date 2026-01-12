@@ -13,7 +13,70 @@ interface SopRecord {
     idx?: string;
     created_at: string;
     overallScore?: number;
+    sop_overall_learning_behavior_status?: string;
+    sop_overall_customer_impact_initial_outcome?: string;
+    sop_overall_customer_impact_final_outcome?: string;
+    sop_overall_initially_before_coaching_level?: string;
+    sop_overall_after_coaching_level?: string;
+    sop_overall_violations_or_red_flags?: any[];
+    sop_overall_help_or_coaching_intensity_level?: string;
 }
+
+// Helper functions for color coding
+const getLearningBehaviorColor = (status?: string) => {
+    const s = (status || '').toLowerCase();
+    if (s.includes('receptive') || s.includes('engaged') || s.includes('proactive')) {
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    }
+    if (s.includes('disinterested') || s.includes('resistant')) {
+        return 'bg-red-100 text-red-700 border-red-200';
+    }
+    return 'bg-slate-100 text-slate-600 border-slate-200';
+};
+
+const getImpactColor = (outcome?: string) => {
+    const o = (outcome || '').toLowerCase();
+    // Check negative first (including "Strongly Negative")
+    if (o.includes('negative')) {
+        return 'text-red-700';
+    }
+    // Then check positive (including "Strongly Positive")
+    if (o.includes('positive')) {
+        return 'text-emerald-700';
+    }
+    return 'text-slate-600';
+};
+
+const getPerformanceLevelColor = (level?: string) => {
+    const l = (level || '').toLowerCase();
+    if (l.includes('strong') || l.includes('excellent')) {
+        return 'text-emerald-700';
+    }
+    if (l.includes('weak') || l.includes('incorrect') || l.includes("didn't know")) {
+        return 'text-red-700';
+    }
+    if (l.includes('good') || l.includes('average')) {
+        return 'text-amber-700';
+    }
+    return 'text-slate-600';
+};
+
+const getViolationColor = (count: number) => {
+    if (count === 0) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    if (count <= 2) return 'bg-amber-100 text-amber-700 border-amber-200';
+    return 'bg-red-100 text-red-700 border-red-200';
+};
+
+const getCoachingColor = (level?: string) => {
+    const l = (level || '').toLowerCase();
+    if (l.includes('none') || l.includes('minimal')) {
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    }
+    if (l.includes('high') || l.includes('intensive')) {
+        return 'bg-red-100 text-red-700 border-red-200';
+    }
+    return 'bg-amber-100 text-amber-700 border-amber-200';
+};
 
 export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) => void }) => {
     const [records, setRecords] = useState<SopRecord[]>([]);
@@ -60,7 +123,7 @@ export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) 
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-slate-900">SOP Evaluation Records</h2>
+                        <h2 className="text-xl font-bold text-slate-900">SOP Evaluation s</h2>
                         <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{records.length} Records</span>
                     </div>
 
@@ -71,7 +134,12 @@ export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) 
                                     <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider pl-6">Record ID</th>
                                     <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date Evaluated</th>
                                     <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Overall Score</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right pr-6">Actions</th>
+                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Learning Behavior</th>
+                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer Impact</th>
+                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Performance Level</th>
+
+                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Coaching</th>
+
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -79,22 +147,24 @@ export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) 
                                     <tr
                                         key={record.id}
                                         onClick={() => onSelectRecord(String(record.id))}
-                                        className="hover:bg-indigo-50/30 transition-colors cursor-pointer group"
+                                        className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 cursor-pointer group hover:shadow-md hover:shadow-indigo-100 active:scale-[0.99] active:bg-indigo-100"
                                     >
-                                        <td className="p-4 pl-6 text-sm font-mono text-slate-600 font-medium border-l-4 border-transparent group-hover:border-indigo-500">
+                                        <td className="p-4 pl-6 text-sm font-mono text-slate-600 font-medium border-l-4 border-transparent group-hover:border-indigo-500 group-hover:bg-indigo-50/50 transition-all duration-200 group-hover:text-indigo-900">
                                             {record.idx || record.id}
                                         </td>
                                         <td className="p-4 text-sm text-slate-600">
-                                            {new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                                            <span className="text-slate-400 text-xs ml-2">
-                                                {new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
+                                            <div className="flex items-center gap-1 whitespace-nowrap">
+                                                <span>{new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                                <span className="text-slate-400 text-xs">
+                                                    {new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td className="p-4">
                                             {record.overallScore !== undefined ? (
-                                                <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${record.overallScore >= 80 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                                                    record.overallScore >= 60 ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                                                        'bg-red-100 text-red-700 border-red-200'
+                                                <span className={`px-2.5 py-1 rounded-md text-xs font-bold border transition-all duration-200 hover:scale-105 hover:shadow-md ${record.overallScore >= 80 ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200' :
+                                                    record.overallScore >= 60 ? 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200' :
+                                                        'bg-red-100 text-red-700 border-red-200 hover:bg-red-200'
                                                     }`}>
                                                     {record.overallScore}/100
                                                 </span>
@@ -102,19 +172,65 @@ export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) 
                                                 <span className="text-slate-400 text-xs italic">N/A</span>
                                             )}
                                         </td>
-                                        <td className="p-4 pr-6 text-right">
-                                            <button
-                                                className="text-indigo-600 group-hover:bg-indigo-100 p-2 rounded-lg transition-all opacity-80 group-hover:opacity-100"
-                                                title="View Details"
-                                            >
-                                                <EyeIcon className="w-4 h-4" />
-                                            </button>
+                                        {/* Learning Behavior */}
+                                        <td className="p-4">
+                                            {record.sop_overall_learning_behavior_status ? (
+                                                <span className={`px-2.5 py-1 rounded-md text-xs font-bold border transition-all duration-200 hover:scale-105 hover:shadow-md ${getLearningBehaviorColor(record.sop_overall_learning_behavior_status)}`}>
+                                                    {record.sop_overall_learning_behavior_status}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">N/A</span>
+                                            )}
                                         </td>
+                                        {/* Customer Impact */}
+                                        <td className="p-4 text-sm">
+                                            {record.sop_overall_customer_impact_initial_outcome && record.sop_overall_customer_impact_final_outcome ? (
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`font-semibold text-xs ${getImpactColor(record.sop_overall_customer_impact_initial_outcome)}`}>
+                                                        {record.sop_overall_customer_impact_initial_outcome}
+                                                    </span>
+                                                    <span className="text-slate-400">→</span>
+                                                    <span className={`font-semibold text-xs ${getImpactColor(record.sop_overall_customer_impact_final_outcome)}`}>
+                                                        {record.sop_overall_customer_impact_final_outcome}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">N/A</span>
+                                            )}
+                                        </td>
+                                        {/* Performance Level */}
+                                        <td className="p-4 text-sm">
+                                            {record.sop_overall_initially_before_coaching_level && record.sop_overall_after_coaching_level ? (
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`font-medium ${getPerformanceLevelColor(record.sop_overall_initially_before_coaching_level)}`}>
+                                                        {record.sop_overall_initially_before_coaching_level.split(' ')[0]}
+                                                    </span>
+                                                    <span className="text-slate-400">→</span>
+                                                    <span className={`font-medium ${getPerformanceLevelColor(record.sop_overall_after_coaching_level)}`}>
+                                                        {record.sop_overall_after_coaching_level.split(' ')[0]}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">N/A</span>
+                                            )}
+                                        </td>
+
+                                        {/* Coaching Intensity */}
+                                        <td className="p-4">
+                                            {record.sop_overall_help_or_coaching_intensity_level ? (
+                                                <span className={`px-2.5 py-1 rounded-md text-xs font-bold border transition-all duration-200 hover:scale-105 hover:shadow-md ${getCoachingColor(record.sop_overall_help_or_coaching_intensity_level)}`}>
+                                                    {record.sop_overall_help_or_coaching_intensity_level}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs italic">N/A</span>
+                                            )}
+                                        </td>
+
                                     </tr>
                                 ))}
                                 {records.length === 0 && (
                                     <tr>
-                                        <td colSpan={4} className="p-12 text-center text-slate-500 italic">
+                                        <td colSpan={9} className="p-12 text-center text-slate-500 italic">
                                             No records found.
                                         </td>
                                     </tr>
