@@ -107,23 +107,23 @@ export const SopDataTable = ({ onSelectRecord }: { onSelectRecord: (id: string) 
     }, []);
 
     if (loading) return (
-        <div className="flex items-center justify-center min-h-screen bg-slate-50 text-slate-500">
+        <div className="flex items-center justify-center py-12 bg-slate-50 text-slate-500">
             <span className="loading-spinner">Loading records...</span>
         </div>
     );
 
     if (error) return (
-        <div className="flex items-center justify-center min-h-screen bg-slate-50 text-red-500">
+        <div className="flex items-center justify-center py-12 bg-slate-50 text-red-500">
             {error}
         </div>
     );
 
     return (
-        <div className="w-full bg-slate-50 min-h-screen p-8 font-sans">
+        <div className="w-full bg-slate-50 p-8 font-sans">
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-slate-900">SOP Evaluation s</h2>
+                        <h2 className="text-xl font-bold text-slate-900">SOP Evaluation</h2>
                         <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{records.length} Records</span>
                     </div>
 

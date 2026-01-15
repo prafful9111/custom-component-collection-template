@@ -316,7 +316,7 @@ export const SopDashboard = () => {
     // 2. Loading State (Dashboard)
     if (isLoading) {
         return (
-            <div className="fixed inset-0 bg-slate-50 z-50 flex items-center justify-center">
+            <div className="w-full bg-slate-50 py-12 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
                     <p className="text-slate-700 font-medium">Loading Analysis...</p>
@@ -328,7 +328,7 @@ export const SopDashboard = () => {
     // 3. Error State
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+            <div className="bg-slate-50 flex items-center justify-center p-4 py-12">
                 <div className="bg-white p-8 rounded-xl shadow-lg border border-red-100 max-w-md w-full text-center">
                     <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                         <AlertTriangleIcon className="w-6 h-6 text-red-500" />
@@ -421,7 +421,7 @@ export const SopDashboard = () => {
     const initialOrderColor = getDynamicStatusColor(reportData.SOP_Overall.Logical_Order_Initial.status, 'yellow');
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 relative">
+        <div className="bg-slate-50 font-sans text-slate-800 pb-12 relative">
 
             {/* --- Top Navigation / Header (Context) --- */}
             <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
