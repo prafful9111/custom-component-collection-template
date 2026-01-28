@@ -72,19 +72,67 @@ Customer: You too, bye.`,
   Weakness_Pointers: []
 };
 
-const CustomAudioPlayer: FC<{ src: string }> = ({ src }) => {
+// Color coding helper functions for table styling
+const getLearningBehaviorColor = (status?: string) => {
+  const s = (status || '').toLowerCase();
+  if (s.includes('receptive') || s.includes('engaged') || s.includes('proactive') || s.includes('fully')) {
+    return { bg: '#dcfce7', color: '#166534', border: '#bbf7d0' }; // emerald
+  }
+  if (s.includes('disinterested') || s.includes('resistant') || s.includes('partially')) {
+    return { bg: '#fef3c7', color: '#92400e', border: '#fde68a' }; // amber
+  }
+  return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' }; // slate
+};
+
+const getImpactColor = (outcome?: string) => {
+  const o = (outcome || '').toLowerCase();
+  if (o.includes('negative')) return '#dc2626'; // red
+  if (o.includes('positive') || o.includes('neutral')) return '#16a34a'; // green
+  return '#64748b'; // slate
+};
+
+const getPerformanceLevelColor = (level?: string) => {
+  const l = (level || '').toLowerCase();
+  if (l.includes('strong') || l.includes('excellent')) return '#16a34a'; // green
+  if (l.includes('weak') || l.includes('incorrect') || l.includes("didn't know")) return '#dc2626'; // red
+  if (l.includes('good') || l.includes('average')) return '#d97706'; // amber
+  return '#64748b'; // slate
+};
+
+const getScoreBadgeStyle = (score: string) => {
+  const s = score.toLowerCase();
+  if (s.includes('strong') || s.includes('excellent') || s.includes('engaged')) {
+    return { bg: '#dcfce7', color: '#166534', border: '#bbf7d0' };
+  }
+  if (s.includes('good') || s.includes('average') || s.includes('partial')) {
+    return { bg: '#dbeafe', color: '#1e40af', border: '#bfdbfe' };
+  }
+  if (s.includes('weak') || s.includes('poor')) {
+    return { bg: '#fee2e2', color: '#991b1b', border: '#fecaca' };
+  }
+  return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
+};
+
+interface CustomAudioPlayerProps {
+  src: string;
+  onDurationChange?: (duration: number) => void;
+}
+
+const CustomAudioPlayer: FC<CustomAudioPlayerProps> = ({ src, onDurationChange }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState<1 | 1.5 | 2>(1);
 
-  // Toggle speed 1x -> 1.5x -> 2x -> 1x
   const toggleSpeed = () => {
-    if (!audioRef.current) return;
-    const nextRate = playbackRate === 1 ? 1.5 : playbackRate === 1.5 ? 2 : 1;
-    audioRef.current.playbackRate = nextRate;
-    setPlaybackRate(nextRate);
+    const speeds: (1 | 1.5 | 2)[] = [1, 1.5, 2];
+    const currentIndex = speeds.indexOf(playbackRate);
+    const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+    setPlaybackRate(nextSpeed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextSpeed;
+    }
   };
 
   useEffect(() => {
@@ -92,8 +140,14 @@ const CustomAudioPlayer: FC<{ src: string }> = ({ src }) => {
     if (!audio) return;
 
     const setAudioData = () => {
-      setDuration(audio.duration);
+      const audioDuration = audio.duration;
+      setDuration(audioDuration);
       setCurrentTime(audio.currentTime);
+
+      // Call the callback to pass duration to parent
+      if (onDurationChange && !isNaN(audioDuration) && audioDuration > 0) {
+        onDurationChange(audioDuration);
+      }
     }
 
     const setAudioTime = () => setCurrentTime(audio.currentTime);
@@ -109,7 +163,7 @@ const CustomAudioPlayer: FC<{ src: string }> = ({ src }) => {
       audio.removeEventListener('timeupdate', setAudioTime);
       audio.removeEventListener('ended', onEnded);
     }
-  }, []);
+  }, [onDurationChange]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -199,6 +253,9 @@ export const MockRoleplayDashboard: FC = () => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
   const [expandedRedFlags, setExpandedRedFlags] = useState<Set<number>>(new Set());
 
+  // State for audio duration
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
+
   // Get evaluation data from Retool model
   const [evaluationData] = Retool.useStateObject({
     name: 'evaluationData'
@@ -216,6 +273,7 @@ export const MockRoleplayDashboard: FC = () => {
   const [fetchedEvaluationData, setFetchedEvaluationData] = useState<MockRoleplayEvaluation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isListLoading, setIsListLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch list on mount
   useEffect(() => {
@@ -238,6 +296,7 @@ export const MockRoleplayDashboard: FC = () => {
   useEffect(() => {
     if (selectedEvaluationId) {
       setIsLoading(true);
+      setAudioDuration(null); // Reset duration when loading new evaluation
       fetch(`https://mockroleplay-backend.onrender.com/api/evaluations/${selectedEvaluationId}`)
         .then(res => res.json())
         .then(data => {
@@ -257,6 +316,7 @@ export const MockRoleplayDashboard: FC = () => {
     setCurrentMode('list');
     setSelectedEvaluationId(null);
     setFetchedEvaluationData(null);
+    setAudioDuration(null); // Reset duration when going back
   };
 
   // Determine final data
@@ -267,113 +327,394 @@ export const MockRoleplayDashboard: FC = () => {
     : (evaluationData || null);
 
   // Metadata Logic:
-  // Hardcoded values as per user request
+  // Helper function to format duration in seconds to mm:ss
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Use audio duration if available, otherwise fall back to backend data or default
+  const displayDuration = audioDuration
+    ? formatDuration(audioDuration)
+    : ((currentMode === 'detail' && fetchedEvaluationData) ? (fetchedEvaluationData as any).call_duration : (metadata?.call_duration || '00:00'));
+
   const finalMetadata: DashboardMetadata = {
     staff_name: 'John Doe',
     staff_id: 'EMP1234',
     sop_name: (currentMode === 'detail' && fetchedEvaluationData) ? (fetchedEvaluationData as unknown as DashboardMetadata).sop_name : (metadata?.sop_name || 'Hospital Price Comparison'),
-    call_duration: '6:22',
-    call_date: (currentMode === 'detail' && fetchedEvaluationData) ? (fetchedEvaluationData as unknown as DashboardMetadata).call_date : (metadata?.call_date || 'N/A'),
+    call_date: (currentMode === 'detail' && fetchedEvaluationData) ? (fetchedEvaluationData as any).call_date : (metadata?.call_date || 'N/A'),
+    call_duration: displayDuration,
     overall_status: (currentMode === 'detail' && fetchedEvaluationData) ? (fetchedEvaluationData as unknown as DashboardMetadata).overall_status : (metadata?.overall_status || 'Completed'),
     audio_url: (currentMode === 'detail' && fetchedEvaluationData && fetchedEvaluationData.audio_url) ? fetchedEvaluationData.audio_url : (metadata?.audio_url || 'https://dcs-spotify.megaphone.fm/WAYW6918246177.mp3?key=c0f202b20175e6b49fa3c7d48ea9d43f'),
-    transcript: `Agent: Good morning, Apollo Hospital. How can I help you?
-Customer: Hi, I'm looking for the cost of a knee replacement.
-Agent: Sure, I can help with that. Are you looking for a package for a single knee or both?
-Customer: Just the left knee.
-Agent: Okay. Our basic package starts at 3.5 Lakhs.
-Customer: That seems high. Are there any discounts?
-Agent: We can check for insurance coverage or specific health card offers.`
+    transcript: (currentMode === 'detail' && fetchedEvaluationData && fetchedEvaluationData.transcript) ? fetchedEvaluationData.transcript : (metadata?.transcript || '')
   };
 
   // Render List View
   if (currentMode === 'list') {
+    // Filter evaluations based on search query
+    const filteredEvaluations = evaluationsList.filter((evaluation) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        evaluation.id.toLowerCase().includes(searchLower) ||
+        evaluation.display_date.toLowerCase().includes(searchLower) ||
+        (evaluation.sop_tag || '').toLowerCase().includes(searchLower) ||
+        (evaluation.pressure_tag || '').toLowerCase().includes(searchLower)
+      );
+    });
+
     return (
-      <div className={styles.dashboard} style={{ width: '100%', padding: '20px', boxSizing: 'border-box' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#1e293b' }}>Evaluation Records</h1>
-        <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <tr>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Date</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>ID</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>SOP</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Pressure Handling</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isListLoading ? (
-                // Skeleton Loading Rows
-                [...Array(5)].map((_, i) => (
-                  <tr key={`skeleton-${i}`} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td className={styles.skeletonCell} style={{ width: '15%' }}>
-                      <div className={styles.skeletonBar} style={{ width: '80%' }}></div>
-                    </td>
-                    <td className={styles.skeletonCell} style={{ width: '20%' }}>
-                      <div className={styles.skeletonBar} style={{ width: '60%' }}></div>
-                    </td>
-                    <td className={styles.skeletonCell} style={{ width: '20%' }}>
-                      <div className={styles.skeletonBar}></div>
-                    </td>
-                    <td className={styles.skeletonCell} style={{ width: '20%' }}>
-                      <div className={styles.skeletonBar} style={{ width: '70%' }}></div>
-                    </td>
-                    <td className={styles.skeletonCell} style={{ width: '15%' }}>
-                      <div className={styles.skeletonBar} style={{ width: '90px' }}></div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                evaluationsList.map((evaluation) => (
-                  <tr
-                    key={evaluation.id}
-                    style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', transition: 'background 0.2s' }}
-                    onClick={() => setSelectedEvaluationId(evaluation.id)}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                  >
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#334155' }}>{evaluation.display_date}</td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#334155', fontFamily: 'monospace' }}>{evaluation.id.slice(0, 8)}...</td>
-                    <td style={{ padding: '16px' }}>
-                      <span className={`${styles.chip} ${evaluation.sop_tag === 'Good' || evaluation.sop_tag === 'Strong' ? styles.chipGood : styles.chipAverage}`}>
-                        {evaluation.sop_tag || 'N/A'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px' }}>
-                      <span className={`${styles.chip} ${evaluation.pressure_tag === 'Good' || evaluation.pressure_tag === 'Strong' ? styles.chipGood : styles.chipAverage}`}>
-                        {evaluation.pressure_tag || 'N/A'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px' }}>
-                      <button
+      <div className={styles.dashboard} style={{ width: '100%', padding: '32px', boxSizing: 'border-box', background: '#f8fafc' }}>
+        {/* Header Section */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '16px',
+          background: 'white',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+          marginBottom: '24px'
+        }}>
+          <div>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px', color: '#0f172a', letterSpacing: '-0.025em' }}>Mock Roleplay Evaluation</h1>
+            <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Review and analyze staff performance in Mock Roleplay Calls</p>
+          </div>
+
+          {/* Search Input */}
+          <div style={{ position: 'relative', marginLeft: 'auto' }}>
+            <svg
+              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search records..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                padding: '10px 16px 10px 38px',
+                fontSize: '14px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '9999px',
+                width: '200px',
+                outline: 'none',
+                transition: 'all 0.2s',
+                background: '#f8fafc',
+                boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#6366f1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+                e.target.style.background = 'white';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#e2e8f0';
+                e.target.style.boxShadow = '0 1px 2px 0 rgb(0 0 0 / 0.05)';
+                e.target.style.background = '#f8fafc';
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Table Container */}
+        <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)' }}>
+          {/* Stats Bar */}
+          <div style={{
+            padding: '12px 20px',
+            borderBottom: '1px solid #f1f5f9',
+            background: 'rgba(248, 250, 252, 0.5)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
+              Showing {filteredEvaluations.length} of {evaluationsList.length} records
+            </span>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: 'white', borderBottom: '1px solid #e2e8f0' }}>
+                  <th style={{ padding: '14px 20px 14px 24px', fontSize: '11px', fontWeight: '700', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    RECORD ID
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    DATE EVALUATED
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    OVERALL SCORE
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    LEARNING BEHAVIOR
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    CUSTOMER IMPACT
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    PERFORMANCE LEVEL
+                  </th>
+                  <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '600', color: '#64748b', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    COACHING
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {isListLoading ? (
+                  // Skeleton Loading Rows
+                  [...Array(7)].map((_, i) => (
+                    <tr key={`skeleton-${i}`} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '70%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '60%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '50%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '65%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '55%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '70%' }}></div>
+                      </td>
+                      <td className={styles.skeletonCell}>
+                        <div className={styles.skeletonBar} style={{ width: '40%' }}></div>
+                      </td>
+                    </tr>
+                  ))
+                ) : filteredEvaluations.length > 0 ? (
+                  filteredEvaluations.map((evaluation, rowIndex) => {
+                    // Get color coding for badges
+                    const learningBehaviorStyle = getLearningBehaviorColor(
+                      evaluation.sop_tag === 'Strong' || evaluation.sop_tag === 'Excellent' ? 'Fully Engaged' :
+                        evaluation.sop_tag === 'Good' ? 'Partially Engaged' : 'Disinterested'
+                    );
+                    const scoreBadgeStyle = getScoreBadgeStyle(evaluation.sop_tag || '');
+
+                    return (
+                      <tr
+                        key={evaluation.id}
                         style={{
-                          padding: '6px 12px',
-                          fontSize: '13px',
-                          background: 'white',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '6px',
+                          borderBottom: '1px solid #f1f5f9',
                           cursor: 'pointer',
-                          color: '#475569'
+                          transition: 'all 0.2s',
+                          position: 'relative',
+                          borderLeft: '4px solid transparent'
                         }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedEvaluationId(evaluation.id);
+                        onClick={() => setSelectedEvaluationId(evaluation.id)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(to right, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05))';
+                          e.currentTarget.style.borderLeftColor = '#6366f1';
+                          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(99, 102, 241, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'white';
+                          e.currentTarget.style.borderLeftColor = 'transparent';
+                          e.currentTarget.style.boxShadow = 'none';
                         }}
                       >
-                        View Report
-                      </button>
+                        {/* Record ID */}
+                        <td style={{
+                          padding: '14px 20px 14px 24px',
+                          fontSize: '13px',
+                          color: '#0f172a',
+                          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                          fontWeight: '500'
+                        }}>
+                          {evaluation.id.slice(0, 16)}...
+                        </td>
+
+                        {/* Date Evaluated */}
+                        <td style={{ padding: '14px 20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontSize: '13px', color: '#475569' }}>
+                              {evaluation.created_at
+                                ? new Date(evaluation.created_at).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })
+                                : evaluation.display_date}
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                              {evaluation.created_at
+                                ? new Date(evaluation.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                : ''}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Overall Score (SOP Tag) */}
+                        <td style={{ padding: '14px 20px' }}>
+                          {evaluation.sop_tag && evaluation.sop_tag !== 'N/A' ? (
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '5px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              borderRadius: '8px',
+                              backgroundColor: scoreBadgeStyle.bg,
+                              color: scoreBadgeStyle.color,
+                              border: `1px solid ${scoreBadgeStyle.border}`,
+                              transition: 'all 0.2s',
+                              cursor: 'pointer'
+                            }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = 'none';
+                              }}
+                            >
+                              {evaluation.sop_tag}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                          )}
+                        </td>
+
+                        {/* Learning Behavior */}
+                        <td style={{ padding: '14px 20px' }}>
+                          {evaluation.sop_tag && evaluation.sop_tag !== 'N/A' ? (
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '5px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              borderRadius: '8px',
+                              backgroundColor: learningBehaviorStyle.bg,
+                              color: learningBehaviorStyle.color,
+                              border: `1px solid ${learningBehaviorStyle.border}`,
+                              transition: 'all 0.2s'
+                            }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none';
+                              }}
+                            >
+                              {evaluation.sop_tag === 'Strong' || evaluation.sop_tag === 'Excellent' ? 'Fully Engaged' :
+                                evaluation.sop_tag === 'Good' ? 'Partially Engaged' :
+                                  'Disinterested'}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                          )}
+                        </td>
+
+                        {/* Customer Impact */}
+                        <td style={{ padding: '14px 20px', fontSize: '13px' }}>
+                          {evaluation.pressure_tag && evaluation.pressure_tag !== 'N/A' ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{
+                                fontWeight: '600',
+                                fontSize: '12px',
+                                color: getImpactColor(evaluation.pressure_tag === 'Strong' ? 'Negative' : 'Neutral')
+                              }}>
+                                {evaluation.pressure_tag === 'Strong' ? 'Negative' : 'Neutral'}
+                              </span>
+                              <span style={{ color: '#94a3b8', fontSize: '14px' }}>→</span>
+                              <span style={{
+                                fontWeight: '600',
+                                fontSize: '12px',
+                                color: getImpactColor('Neutral')
+                              }}>
+                                Neutral
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                          )}
+                        </td>
+
+                        {/* Performance Level */}
+                        <td style={{ padding: '14px 20px', fontSize: '13px' }}>
+                          {evaluation.pressure_tag && evaluation.pressure_tag !== 'N/A' ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{
+                                fontWeight: '500',
+                                fontSize: '12px',
+                                color: getPerformanceLevelColor("Didn't Know")
+                              }}>
+                                Didn't Know
+                              </span>
+                              <span style={{ color: '#94a3b8', fontSize: '14px' }}>→</span>
+                              <span style={{
+                                fontWeight: '500',
+                                fontSize: '12px',
+                                color: getPerformanceLevelColor(evaluation.pressure_tag === 'Strong' ? 'Weak' : "Didn't Know")
+                              }}>
+                                {evaluation.pressure_tag === 'Strong' ? 'Weak' : "Didn't Know"}
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                          )}
+                        </td>
+
+                        {/* Coaching */}
+                        <td style={{ padding: '14px 20px' }}>
+                          <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '48px', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <p style={{ color: '#94a3b8', fontSize: '14px', fontStyle: 'italic', margin: 0 }}>
+                          No records found matching "{searchQuery}"
+                        </p>
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          style={{
+                            padding: '6px 16px',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: '#6366f1',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            textDecoration: 'underline'
+                          }}
+                        >
+                          Clear filters
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )))}
-              {!isListLoading && evaluationsList.length === 0 && (
-                <tr>
-                  <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
-                    No evaluations found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -485,7 +826,7 @@ Agent: We can check for insurance coverage or specific health card offers.`
 
     // Resolve Audio & Transcript (Metadata > Evaluation Data > nothing)
     const resolvedAudioUrl = finalMetadata?.audio_url || finalEvaluationData.audio_url;
-    const resolvedTranscript = finalMetadata?.transcript || finalEvaluationData.transcript;
+    const resolvedTranscript = finalEvaluationData.transcript || finalMetadata?.transcript;
 
     return (
       <div className={styles.dashboard}>
@@ -615,7 +956,10 @@ Agent: We can check for insurance coverage or specific health card offers.`
             <div className={styles.audioTranscriptPanel}>
               <div className={styles.audioPlayerSection}>
                 {resolvedAudioUrl ? (
-                  <CustomAudioPlayer src={resolvedAudioUrl} />
+                  <CustomAudioPlayer
+                    src={resolvedAudioUrl}
+                    onDurationChange={(duration) => setAudioDuration(duration)}
+                  />
                 ) : (
                   <div className={styles.audioPlayer}>
                     <div style={{ color: '#6c757d', padding: '12px' }}>
@@ -627,24 +971,47 @@ Agent: We can check for insurance coverage or specific health card offers.`
               <div className={styles.transcriptContainer}>
                 {resolvedTranscript ? (
                   resolvedTranscript.split('\n').map((line, idx) => {
-                    const isAgent = line.toLowerCase().startsWith('agent:');
-                    const isCustomer = line.toLowerCase().startsWith('customer:');
-                    const cleanLine = line.replace(/^(Agent|Customer):/i, '').trim();
+                    let trimmedLine = line.trim();
+                    if (!trimmedLine) return null;
 
-                    if (!cleanLine) return null;
+                    // Remove timestamps in format [HH:MM:SS AM/PM] or [HH:MM:SS]
+                    trimmedLine = trimmedLine.replace(/^\[\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM)?\]\s*/i, '');
 
-                    return (
-                      <div key={idx} className={styles.chatMessage}>
-                        {(isAgent || isCustomer) && (
+                    // Check for speaker labels (support various formats: AGENT:, Agent:, USER:, CUSTOMER:)
+                    const agentMatch = trimmedLine.match(/^(AGENT|Agent):\s*/i);
+                    const customerMatch = trimmedLine.match(/^(USER|CUSTOMER|Customer):\s*/i);
+
+                    if (agentMatch || customerMatch) {
+                      const isAgent = !!agentMatch;
+                      const speaker = isAgent ? 'AGENT' : 'CUSTOMER';
+                      const text = trimmedLine.replace(/^(AGENT|Agent|USER|CUSTOMER|Customer):\s*/i, '').trim();
+
+                      if (!text) return null;
+
+                      return (
+                        <div key={idx} className={styles.chatMessage}>
                           <span className={`${styles.messageLabel} ${isAgent ? styles.agentLabel : styles.customerLabel}`}>
-                            {isAgent ? 'Agent' : 'Customer'}
+                            {speaker}
                           </span>
-                        )}
-                        <div className={styles.messageText}>
-                          {cleanLine || line}
+                          <div className={styles.messageText}>
+                            {text}
+                          </div>
                         </div>
-                      </div>
-                    );
+                      );
+                    }
+
+                    // If no label but has content, just display the line as-is
+                    if (trimmedLine) {
+                      return (
+                        <div key={idx} className={styles.chatMessage}>
+                          <div className={styles.messageText}>
+                            {trimmedLine}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return null;
                   })
                 ) : (
                   <div style={{ color: '#6c757d', textAlign: 'center', padding: '20px' }}>

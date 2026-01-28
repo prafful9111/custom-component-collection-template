@@ -30,6 +30,7 @@ const s3Client = new S3Client({
 const generatePresignedUrl = async (originalUrl) => {
     if (!originalUrl) return null;
     try {
+        console.log(`Generating presigned URL abc for: ${originalUrl}`);
         let bucket, key;
 
         // Handle full S3 URLs or just Keys
@@ -56,12 +57,16 @@ const generatePresignedUrl = async (originalUrl) => {
             key = originalUrl;
         }
 
+        console.log(`Extracted - Bucket: ${bucket}, Key: ${key}`);
+
         if (bucket && key) {
             const command = new GetObjectCommand({
                 Bucket: bucket,
                 Key: key
             });
-            return await getSignedUrl(s3Client, command, { expiresIn: 86400 }); // 24 hours
+            const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 86400 }); // 24 hours
+            console.log('Successfully generated signed URL');
+            return signedUrl;
         }
         return originalUrl;
     } catch (err) {
@@ -110,7 +115,7 @@ const mapDatabaseRowToFrontend = async (row) => {
 
         // Critical Data
         audio_url: signedAudioUrl || '',
-        transcript: row.transcript || '',
+        transcript: row.transcription || '',
 
         // Evaluation Data (Extracted from analysis JSON)
         Red_Flags: safeJson(analysis.Red_Flags) || [],
