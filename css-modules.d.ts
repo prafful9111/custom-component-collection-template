@@ -1,12 +1,26 @@
 // css-modules.d.ts
 declare module '*.module.scss' {
-const classes: { [key: string]: string }
+  const classes: { [key: string]: string }
   export default classes
 }
 declare module '*.module.css' {
-const classes: { [key: string]: string }
+  const classes: { [key: string]: string }
   export default classes
 }
 
-declare module '*.css' {
+declare module '*.css' { }
+
+declare module '*.png' {
+  const value: string;
+  export default value;
+}
+
+declare module '*.jpg' {
+  const value: string;
+  export default value;
+}
+
+declare module '*.svg' {
+  const value: any;
+  export default value;
 }
